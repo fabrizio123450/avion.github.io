@@ -1,0 +1,48 @@
+
+.player {
+    position: absolute;
+    background-image: url("../img/player.png");
+    width: 70px;
+    height: 75px;
+
+}
+
+.enemy {
+    position: absolute;
+    background-image: url("../img/enemy.png");
+    width: 70px;
+    height: 75px;
+}
+
+.missile {
+    position: absolute;
+    background-color: rgb(6, 83, 6);
+    width: 5px;
+    height: 10px;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#ocean {
+    background-image: url("../img/ocean.jpg");
+    background-repeat: repeat-y;
+    background-size: cover;
+    height: 100vh;
+    animation: moveOcean 20s linear infinite;
+}
+
+@keyframes moveOcean {
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 0 50%;
+    }
+    100% {
+        background-position: 0 100%;
+    }
+}
+
