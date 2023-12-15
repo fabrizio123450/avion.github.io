@@ -1,94 +1,168 @@
-var player = {
-    left: 450,
-    top: 620
+/**variable que tiene los datos del contenedor
+ */
+let gameBox = document.getElementById("ocean");
+let ancho = gameBox.offsetWidth;
+let largo = gameBox.offsetHeight;
+//variable axuliar que impide que presione enter en caso de iniciar el juego
+let juegoEnCurso = false;
+//puntaje
+const score = document.getElementById("score")
+let num = 0;
+/*obtengo las imagenes que representa mi vida*/
+let lifeElement = document.getElementById("life");
+let lifeImages = lifeElement.getElementsByClassName("life-image");
+
+//estado de jugador
+let player = {
+    left: 50,
+    top: 80,
+    life: 3
 }
+//inicializo los misiles y enemigos
+let missile = [];
 
-var missile = [];
-
-var enemies = [
-    { left: 350, top: 200 },
-    { left: 450, top: 250 },
-    { left: 550, top: 300 },
-    { left: 650, top: 350 }
+let enemies = [
+    { left: 70, top: 10 },
+    { left: 60, top: 10 },
+    { left: 50, top: 10 },
+    { left: 40, top: 10 }
 ]
 
+//enemigos
 function drawEnemies() {
     content = "";
-    for (var i = 0; i < enemies.length; i++) {
-        content += "<div class='enemy' style='left:" + enemies[i].left + "px;top: " + enemies[i].top + "px;'></div>";
+    for (let i = 0; i < enemies.length; i++) {
+        content += "<div class='enemy' style='left:" + enemies[i].left + "%;top: " + enemies[i].top + "%;'></div>";
     }
     document.getElementById("enemies").innerHTML = content;
 }
 
-
+//jugador
 function drawPlayer() {
-    content = "<div class='player' style='left:" + player.left + "px;top: " + player.top + "px;'></div>";
+    content = "<div class='player' style='left:" + player.left + "%;top: " + player.top + "%;'></div>";
     document.getElementById("players").innerHTML = content;
 }
-
+//misiles
 function drawMissiles() {
     content = "";
-    for (var i = 0; i < missile.length; i++) {
-        content += "<div class='missile' style='left: " + missile[i].left + "px; top: " + missile[i].top + "px'></div>"
+    for (let i = 0; i < missile.length; i++) {
+        content += "<div class='missile' style='left: " + missile[i].left + "%; top: " + missile[i].top + "%'></div>"
     }
     document.getElementById("missiles").innerHTML = content;
 }
 
 
 function moveEnemies() {
-    for (var i = 0; i < enemies.length; i++) {
+    for (let i = 0; i < enemies.length; i++) {
         /**VUELVEN A EMPEZAR DE ARRIBA AL LLEGAR AL FINAL**/
-        if (enemies[i].top < 625) {
-            enemies[i].top += 1;
-            console.log(enemies[i].top)
-        } else {
-            enemies[i].top = 0;
-        }
-    }
-}
-const score = document.getElementById("score")
-let num = 0;
-function moveMissiles() {
-    for (var i = 0; i < missile.length; i++) {
-        missile[i].top -= 6;
-        for (var j = 0; j < enemies.length; j++) {
-            if (
-                /**cuadro del enemigo y misil */
-                missile[i].left < enemies[j].left + 70 &&
-                missile[i].left + 5 > enemies[j].left &&
-                missile[i].top < enemies[j].top + 75 &&
-                missile[i].top + 5 > enemies[j].top
-            ) {
-                enemies.splice(j, 1);
-                num++
-                score.innerHTML= num;
+        if (enemies[i].top < 89) {
+            if (num >= 7) {
+                enemies[i].top += 0.5;
+            } else {
+                enemies[i].top += 0.1;
             }
 
+            console.log(enemies[i].top)
+        } else {
+            enemies[i].top = 10;
         }
-
     }
 }
-document.onkeydown = function (e) {
-    if (e.key === "ArrowLeft" && player.left > 10) { // Izquierda
-        player.left -= 10;
-    }
-    if (e.key === "ArrowRight" && player.left < 840) { // Derecha
-        player.left += 10;
-    }
-    if (e.key === "ArrowDown" && player.top < 625) { // Abajo
-        player.top += 10;
-    }
-    if (e.key === "ArrowUp" && player.top > 500) { // Arriba
-        player.top -= 10;
-    }
-    if (e.key === " ") { // spacebar fire
-        missile.push({ left: (player.left + 34), top: (player.top + 8) });
-        drawMissiles();
-    }
 
+function highScore() {
+    num++;
+    score.innerHTML = num;
+    //nueva ronda de enemigos
+    if (num === 4) {
+        num++
+        score.innerHTML = num;
+        enemies.push(
+            { left: 89, top: 10 },
+            { left: 30, top: 0 }
+        )
 
-    drawPlayer();
+    } else if (num >= 7) {
+        enemies.push(
+            { left: Math.floor(Math.random() * (89 - 10 + 1)) + 10, top: 10 },
+        )
+    }
 }
+
+/**function
+ * que reduce mi vida
+ */
+function lifePlayer() {
+    player.life--;
+
+    if (lifeImages.length > 0) {
+        lifeImages[lifeImages.length - 1].remove();
+    }
+    if (player.life === 0) {
+        alert("GAMEOVER");
+        location.reload();
+    }
+}
+
+function colisionEnemigo() {
+    for (let i = 0; i < enemies.length; i++) {
+        let enemyLeft = (parseFloat(enemies[i].left) / 100) * ancho;
+        let enemyTop = (parseFloat(enemies[i].top) / 100) * largo;
+        let playerLeft = (parseFloat(player.left) / 100) * ancho;
+        let playerTop = (parseFloat(player.top) / 100) * largo;
+        // verifica la colisión entre el jugador y el enemigo
+        //con su ancho y largo
+        if (
+            playerLeft < enemyLeft + 70 &&
+            playerLeft + 70 > enemyLeft &&
+            playerTop < enemyTop + 75 &&
+            playerTop + 75 > enemyTop
+        ) {
+            //alert("¡Colisión con enemigo!");
+            enemies.splice(i, 1);
+            lifePlayer();
+            highScore();
+
+        }
+    }
+}
+
+
+function moveMissiles() {
+    let colisiones = [];
+    for (let i = 0; i < missile.length; i++) {
+        missile[i].top -= 1;
+
+        for (let j = 0; j < enemies.length; j++) {
+            // coordenadas del misil y el enemigo en píxeles
+            let missileLeft = (parseFloat(missile[i].left) / 100) * ancho;
+            let missileTop = (parseFloat(missile[i].top) / 100) * largo;
+
+            let enemyLeft = (parseFloat(enemies[j].left) / 100) * ancho;
+            let enemyTop = (parseFloat(enemies[j].top) / 100) * largo;
+
+            // verifica la colisión
+            // con el ancho y largo del enemigo y misil
+            if (
+                missileLeft < enemyLeft + 70 &&
+                missileLeft + 5 > enemyLeft &&
+                missileTop < enemyTop + 75 &&
+                missileTop + 10 > enemyTop
+            ) {
+                colisiones.push({ missile: i, enemy: j });
+                highScore();
+            }
+        }
+    }
+
+    /**con esto me evito que salte el error que misiles es 0 */
+    colisiones.forEach(colision => {
+        missile.splice(colision.missile, 1);
+        enemies.splice(colision.enemy, 1);
+
+    });
+
+}
+
 
 function gameLoop() {
     console.log("gameLoop is running!");
@@ -97,8 +171,38 @@ function gameLoop() {
     drawEnemies();
     moveMissiles();
     drawMissiles();
+    colisionEnemigo();
     setTimeout(gameLoop, 10);
 }
-gameLoop();
+//Botones del juego
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" && player.left > 7) { // Izquierda
+        player.left -= 1;
+    }
+    if (e.key === "ArrowRight" && player.left < 89) { // Derecha
+        player.left += 1;
+    }
+    if (e.key === "ArrowDown" && player.top < 89) { // Abajo
+        player.top += 1;
+    }
+    if (e.key === "ArrowUp" && player.top > 10) { // Arriba
+        player.top -= 1;
+    }
+    if (e.key === " ") { // spacebar fire
+        missile.push({ left: (player.left + 2.5), top: (player.top + 2.5) });
+        drawMissiles();
+    }
+
+
+    drawPlayer();
+    /**no se ejecuta el juego hasta que se presione ENTER */
+    if (e.key === "Enter" && !juegoEnCurso) {
+        document.getElementById("start").style.display = "none";
+        document.getElementById("game").style.display = "block";
+        gameLoop();
+        juegoEnCurso = true;
+    }
+})
+
 
 /**PARA EL PUNTAJE QUE GUARDE */
