@@ -25,6 +25,7 @@ function drawPlayer() {
     content = "<div class='player' style='left:" + player.left + "px;top: " + player.top + "px;'></div>";
     document.getElementById("players").innerHTML = content;
 }
+
 function drawMissiles() {
     content = "";
     for (var i = 0; i < missile.length; i++) {
@@ -32,6 +33,7 @@ function drawMissiles() {
     }
     document.getElementById("missiles").innerHTML = content;
 }
+
 
 function moveEnemies() {
     for (var i = 0; i < enemies.length; i++) {
@@ -44,10 +46,26 @@ function moveEnemies() {
         }
     }
 }
-
+const score = document.getElementById("score")
+let num = 0;
 function moveMissiles() {
     for (var i = 0; i < missile.length; i++) {
         missile[i].top -= 6;
+        for (var j = 0; j < enemies.length; j++) {
+            if (
+                /**cuadro del enemigo y misil */
+                missile[i].left < enemies[j].left + 70 &&
+                missile[i].left + 5 > enemies[j].left &&
+                missile[i].top < enemies[j].top + 75 &&
+                missile[i].top + 5 > enemies[j].top
+            ) {
+                enemies.splice(j, 1);
+                num++
+                score.innerHTML= num;
+            }
+
+        }
+
     }
 }
 document.onkeydown = function (e) {
@@ -63,7 +81,7 @@ document.onkeydown = function (e) {
     if (e.key === "ArrowUp" && player.top > 500) { // Arriba
         player.top -= 10;
     }
-    if (e.key ===  " ") { // spacebar fire
+    if (e.key === " ") { // spacebar fire
         missile.push({ left: (player.left + 34), top: (player.top + 8) });
         drawMissiles();
     }
@@ -82,3 +100,5 @@ function gameLoop() {
     setTimeout(gameLoop, 10);
 }
 gameLoop();
+
+/**PARA EL PUNTAJE QUE GUARDE */
