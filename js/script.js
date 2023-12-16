@@ -11,7 +11,8 @@ let num = 0;
 /*obtengo las imagenes que representa mi vida*/
 let lifeElement = document.getElementById("life");
 let lifeImages = lifeElement.getElementsByClassName("life-image");
-
+//nombre del que jugo
+let nombre = '';
 //estado de jugador
 let player = {
     left: 50,
@@ -30,7 +31,7 @@ let enemies = [
 
 //enemigos
 function drawEnemies() {
-    content = "";
+    let content = "";
     for (let i = 0; i < enemies.length; i++) {
         content += "<div class='enemy' style='left:" + enemies[i].left + "%;top: " + enemies[i].top + "%;'></div>";
     }
@@ -39,12 +40,12 @@ function drawEnemies() {
 
 //jugador
 function drawPlayer() {
-    content = "<div class='player' style='left:" + player.left + "%;top: " + player.top + "%;'></div>";
+    let content = "<div class='player' style='left:" + player.left + "%;top: " + player.top + "%;'></div>";
     document.getElementById("players").innerHTML = content;
 }
 //misiles
 function drawMissiles() {
-    content = "";
+    let content = "";
     for (let i = 0; i < missile.length; i++) {
         content += "<div class='missile' style='left: " + missile[i].left + "%; top: " + missile[i].top + "%'></div>"
     }
@@ -89,7 +90,8 @@ function highScore() {
 }
 
 /**function
- * que reduce mi vida
+ * que reduce mi vida tambien
+ * PARA QUE EL PUNTAJE SE GUARDE 
  */
 function lifePlayer() {
     player.life--;
@@ -99,10 +101,29 @@ function lifePlayer() {
     }
     if (player.life === 0) {
         alert("GAMEOVER");
+        nombre = prompt("Cual es tu nombre: ");
+
+        // obtengo datos que existen o sino crea un array vacio
+        //y guardo esos datos en el local storage
+        const saveJson = localStorage.getItem('datos');
+        const saveData = saveJson ? JSON.parse(saveJson) : [];
+        saveData.push({ nombre: nombre, puntaje: num });
+        localStorage.setItem('datos', JSON.stringify(saveData));
         location.reload();
     }
 }
-
+function getScore() {
+    let content = "";
+    const saveJson = localStorage.getItem('datos');
+    //obtengo mis datos
+    const saveData = saveJson ? JSON.parse(saveJson) : [];
+    //agrego los puntajes al html
+    for (let i = 0; i < saveData.length; i++) {
+        content += "<div class='puntaje'><p>"+saveData[i].nombre +"      "+saveData[i].puntaje +"</p><div>"
+    }
+    document.getElementById("scoreContainer").innerHTML = content;
+    console.log(saveData);
+}
 function colisionEnemigo() {
     for (let i = 0; i < enemies.length; i++) {
         let enemyLeft = (parseFloat(enemies[i].left) / 100) * ancho;
@@ -136,7 +157,6 @@ function moveMissiles() {
             // coordenadas del misil y el enemigo en píxeles
             let missileLeft = (parseFloat(missile[i].left) / 100) * ancho;
             let missileTop = (parseFloat(missile[i].top) / 100) * largo;
-
             let enemyLeft = (parseFloat(enemies[j].left) / 100) * ancho;
             let enemyTop = (parseFloat(enemies[j].top) / 100) * largo;
 
@@ -203,6 +223,41 @@ document.addEventListener("keydown", (e) => {
         juegoEnCurso = true;
     }
 })
+/**boton para volver atras en la aplicacion */
+document.getElementById('back').addEventListener('click',()=>{
+    window.location.href = "https://fabrizio123450.github.io/gamesTrunk.github.io/";
+})
+/**MODAL *************************************/
+const openModalBtn = document.getElementById('openModalBtn');
+const modal = document.getElementById('myModal');
+/**puntajes modal */
+const modalScore = document.getElementById('scores')
+const modal2 = document.getElementById('myModal2');
+const closeModalBtn = document.querySelector('.close');
+const closeModalBtn2 = document.querySelector('.close2');
+//PUNTAJE EN MODAL
+modalScore.addEventListener('click', () => {
+    getScore();
+    modal2.style.display = 'block';
 
+});
 
-/**PARA EL PUNTAJE QUE GUARDE */
+openModalBtn.addEventListener('click', () => {
+    modal.style.display = 'block';
+});
+
+// Cerrar el modal cuando se hace clic en la "X"
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+//CIEROO MODAL PUNTAJE
+closeModalBtn2.addEventListener('click', () => {
+    modal2.style.display = 'none';
+});
+// Cerrar el modal cuando se hace clic fuera del modal
+window.addEventListener('click', (event) => {
+    if (event.target === modal || event.target === modal2 ) {
+        modal.style.display = 'none';
+        modal2.style.display = 'none';
+    }
+});

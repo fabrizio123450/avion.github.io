@@ -2,14 +2,35 @@
 <html>
 
 <head>
-	<title>WAR PLANES</title>
+	<title>SPACE WAR</title>
 	<link rel="stylesheet" href="./css/style.css">
 	<script src="./js/script.js" defer></script>
 </head>
 
 <body id="ocean" class="moving-image">
 	<div id="start">
-		<h1>Bienvenido a War Planes</h1>
+		<button id="back">ATRAS</button>
+		<button id="openModalBtn">?</button>
+		<div id="myModal" class="modal">
+		  <div class="modal-content">
+			<span class="close">&times;</span>
+			<h2>COMO JUGAR</h2>
+			<p>-Te Mueves con las teclas direccionales</p>
+			<p>-Disparas con la tecla espacio</p>
+			<p>-Al destruir a la primera tanda de enemigos ganas un punto extra</p>
+			<p>-El objetivo principal es sobrevivir lo que puedas</p>
+			<p>-Tienes 3 vidas</p>
+		  </div>
+		</div>
+		<button id="scores">PUNTAJES</button>
+		<div id="myModal2" class="modal2">
+			<div class="modal-content2">
+				<span class="close2">&times;</span>
+				<h2>PUNTAJES</h2>
+				<div id="scoreContainer"></div>
+			  </div>
+		</div>
+		<h1>Bienvenido a Space War</h1>
 		<p id="mensaje">Pulsa Enter para comenzar</p>
 	</div>
 
